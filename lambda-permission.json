@@ -1,0 +1,42 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "rds:DownloadDBLogFilePortion",
+                "rds:DescribeDBLogFiles"
+            ],
+            "Resource": "arn:aws:rds:ap-southeast-1:411578039387:db:small-mysql"
+        },
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": [
+                "kinesis:PutRecords"
+            ],
+            "Resource": "arn:aws:kinesis:ap-southeast-1:411578039387:stream/mysql-audit-log"
+        },
+        {
+            "Sid": "VisualEditor2",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:GetItem",
+                "dynamodb:UpdateItem"
+            ],
+            "Resource": "arn:aws:dynamodb:ap-southeast-1:411578039387:table/mysql_audit_log_metadata"
+        },
+        {
+            "Sid": "VisualEditor3",
+            "Effect": "Allow",
+            "Action": [
+                "s3:PutObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::rds-mysql-audit-log",
+                "arn:aws:s3:::rds-mysql-audit-log/*"
+            ]
+        }
+    ]
+}
