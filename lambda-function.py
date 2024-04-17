@@ -189,7 +189,6 @@ def lambda_handler(event, context):
 		update_metadata_in_ddb(DDB_AUDIT_LOG_METADATA_TABLE, max(new_last_written_time), log_file_name)
 
 		# batch load latest messages s3 on each audit log file size maximum
-		# upload_log_file_to_s3(str(to_s3_full_log_records).encode(errors='ignore'), BUCKET_NAME, LOG_BUCKET_PREFIX+'-'+str(each_log_file['LastWritten']))
 		upload_log_file_to_s3("\n".join(to_s3_full_log_records).encode(errors='ignore'), BUCKET_NAME, LOG_BUCKET_PREFIX+'-'+str(each_log_file['LastWritten']))
 
 		# filter rdsadmin out - internal operation, before load to kinesis stream
@@ -209,7 +208,4 @@ def lambda_handler(event, context):
 
 		logger.info('done')
 		return 'done'
-
-
-
 
