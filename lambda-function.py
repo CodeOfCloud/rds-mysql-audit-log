@@ -28,7 +28,7 @@ def get_metadata_from_ddb(table_name):
     {
         "DatabaseInstanceName": "small-mysql"
         "AuditLogLastWritten": 1713161934,
-		"LogFileName": "audit-log-2000000000000000000.sql"
+		"LogFileName": "audit/server_audit.log"
     }
     '''
 	
