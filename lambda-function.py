@@ -69,11 +69,19 @@ def download_latest_db_audit_file(db_instance_name, log_name_prefix, last_writte
 			if int(db_audi_log['LastWritten']) > last_written_time:
 				logger.info(f'proceed to download {db_audi_log["LogFileName"]}')
 				try: 
-					log_file_response = rds_client.download_db_log_file_portion(DBInstanceIdentifier=db_instance_name, LogFileName=db_audi_log['LogFileName'], Marker='0')
-					db_audi_log.update({'LogFileData': log_file_response['LogFileData']})
-					log_files.append(db_audi_log)
-					new_last_written_time.append(db_audi_log['LastWritten'])
-					# update last written time
+					more_logs_remaining_in_file = True
+					file_log_marker = '0'
+					while more_logs_remaining_in_file:
+						log_file_response = rds_client.download_db_log_file_portion(DBInstanceIdentifier=db_instance_name, LogFileName=db_audi_log['LogFileName'], Marker=file_log_marker)
+						db_audi_log.update({'LogFileData': log_file_response['LogFileData']})
+						log_files.append(db_audi_log)
+						new_last_written_time.append(db_audi_log['LastWritten'])
+						logger.info (f"File download marker: {file_log_marker}")
+						# update last written time
+						if log_file_response['AdditionalDataPending']:
+							file_log_marker = log_file_response['Marker']
+						else:
+							more_logs_remaining_in_file = False
 				except Exception as e:
 					logger.info (f"File download failed: {e}")
 					continue
@@ -208,4 +216,3 @@ def lambda_handler(event, context):
 
 		logger.info('done')
 		return 'done'
-
