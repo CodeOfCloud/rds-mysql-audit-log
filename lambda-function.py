@@ -180,13 +180,17 @@ def lambda_handler(event, context):
 		logger.info(f'existing audit log file name -- {log_file_name}')
 		if log_file_name == last_written_log_file_name:
 			logger.info(f'same audit log file -- {log_file_name}')
-			for each_log_record in log_records[:-1]:
-				record_time_str = each_log_record.split(',')[0]
-				record_time_obj = datetime.strptime(record_time_str+"+0000", '%Y%m%d %H:%M:%S%z') # time string in utc
-				record_time_epoch = int(record_time_obj.timestamp())*1000
-				# compare with last time record time
-				if record_time_epoch > last_written_time:
-					to_s3_full_log_records.append(each_log_record)
+			for each_log_record in log_records:
+				try: 
+					record_time_str = each_log_record.split(',')[0]
+					record_time_obj = datetime.strptime(record_time_str+"+0000", '%Y%m%d %H:%M:%S%z') # time string in utc
+					record_time_epoch = int(record_time_obj.timestamp())*1000
+					# compare with last time record time
+					if record_time_epoch > last_written_time:
+						to_s3_full_log_records.append(each_log_record)
+				except Exception as e:
+					logger.info(f'Exception on unformatted line: {e}')
+					pass
 			logger.info(f'latest message number -- {len(to_s3_full_log_records)}' )
 		else:
 			logger.info(f'new audit log file name -- {log_file_name}')
